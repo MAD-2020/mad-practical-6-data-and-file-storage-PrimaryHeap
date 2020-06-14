@@ -1,8 +1,9 @@
 package sg.edu.np.week_6_whackamole_3_0;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 
-public class UserData {
+public class UserData implements Serializable{
 
     /* NOTE:
             THIS OBJECT DATA IS GIVEN.

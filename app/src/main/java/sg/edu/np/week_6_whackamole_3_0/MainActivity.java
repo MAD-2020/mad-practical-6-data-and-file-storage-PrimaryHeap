@@ -4,6 +4,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
@@ -24,6 +25,10 @@ public class MainActivity extends AppCompatActivity {
     private static final String FILENAME = "MainActivity.java";
     private static final String TAG = "Whack-A-Mole3.0!";
 
+    EditText username , password;
+    Button login;
+    TextView newUser;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -38,6 +43,42 @@ public class MainActivity extends AppCompatActivity {
             Log.v(TAG, FILENAME + ": Invalid user!");
 
         */
+        username = findViewById( R.id.usernameEdit);
+        password = findViewById( R.id.passwordEdit);
+        login = findViewById( R.id.Login);
+        newUser = findViewById( R.id.newUser);
+
+        login.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View v) {
+                String name = username.getText().toString();
+                String pass = password.getText().toString();
+                if (!isValidUser(name , pass)) {
+                    Log.v(TAG, FILENAME + ": Valid User! Logging in");
+
+                    MyDBHandler myDBHandler = new MyDBHandler(MainActivity.this);
+                    UserData userData = myDBHandler.findUser(name);
+
+                    Log.v(TAG, FILENAME + ": Logging in with: " + name + ": " + pass);
+                    Intent levels = new Intent(MainActivity.this , Main3Activity.class);
+                    levels.putExtra("User", userData);
+                    startActivity(levels);
+
+                }else{
+                    Log.v(TAG, FILENAME + ": Invalid user!");
+                    Toast.makeText(MainActivity.this , "Invalid Username and Password" , Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
+
+        newUser.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View v) {
+                Log.v(TAG, FILENAME + ": Create new user!");
+                Intent create = new Intent(MainActivity.this, Main2Activity.class);
+                startActivity(create);
+            }
+        });
 
 
     }
@@ -54,6 +95,16 @@ public class MainActivity extends AppCompatActivity {
             Log.v(TAG, FILENAME + ": Running Checks..." + dbData.getMyUserName() + ": " + dbData.getMyPassword() +" <--> "+ userName + " " + password);
             You may choose to use this or modify to suit your design.
          */
+
+        MyDBHandler myDBHandler = new MyDBHandler(MainActivity.this);
+        UserData userData = myDBHandler.findUser(userName);
+
+        if (userData == null) {
+            return true;
+        }else {
+            Log.v(TAG, FILENAME + ": Running Checks..." + userData.getMyUserName() + ": " + userData.getMyPassword() +" <--> "+ userName + " " + password);
+            return false;
+        }
 
     }
 
